@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/search/:number",
+      "destination": "/index.html"
+    }
+  ]
+}
