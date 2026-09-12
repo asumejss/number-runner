@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Number Runner</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: white;
+        text-align: center;
+    }
+
+    .box {
+        width: min(90%, 500px);
+        padding: 35px;
+        border-radius: 25px;
+        background: #222;
+    }
+
+    h1 {
+        margin-top: 0;
+    }
+
+    #number {
+        font-size: 80px;
+        font-weight: bold;
+        margin: 25px 0;
+    }
+
+    #url {
+        font-size: 14px;
+        color: #aaa;
+        word-break: break-all;
+        margin-bottom: 25px;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+        border: none;
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    button {
+        border: none;
+        border-radius: 12px;
+        padding: 14px 25px;
+        margin: 5px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    #start {
+        background: white;
+        color: black;
+    }
+
+    #stop {
+        background: #555;
+        color: white;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>Number Runner</h1>
+
+    <div id="number">1</div>
+
+    <div id="url"></div>
+
+    <input
+        id="maximum"
+        type="number"
+        value="100"
+        min="1"
+        placeholder="Maximum number"
+    >
+
+    <br>
+
+    <button id="start" onclick="startRunner()">Start</button>
+
+    <button id="stop" onclick="stopRunner()">Stop</button>
+
+</div>
+
+<script>
+
+const match =
+    window.location.pathname.match(/^\/search\/(\d+)\/?$/);
+
+let number = match ? Number(match[1]) : 1;
+
+let running =
+    sessionStorage.getItem("numberRunnerRunning") === "true";
+
+
+function updateDisplay() {
+
+    document.getElementById("number").textContent = number;
+
+    document.getElementById("url").textContent =
+        window.location.href;
+}
+
+
+function startRunner() {
+
+    running = true;
+
+    sessionStorage.setItem(
+        "numberRunnerRunning",
+        "true"
+    );
+
+    continueRunner();
+}
+
+
+function stopRunner() {
+
+    running = false;
+
+    sessionStorage.setItem(
+        "numberRunnerRunning",
+        "false"
+    );
+}
+
+
+function continueRunner() {
+
+    if (!running) {
+        return;
+    }
+
+    const maximum =
+        Number(document.getElementById("maximum").value);
+
+    if (number >= maximum) {
+
+        stopRunner();
+
+        document.getElementById("url").textContent =
+            "Finished!";
+
+        return;
+    }
+
+    const nextNumber = number + 1;
+
+    /*
+       Go to a completely different URL.
+       Vercel will serve this same page at that URL.
+    */
+
+    window.location.href =
+        "/search/" + nextNumber;
+}
+
+
+window.addEventListener("load", function() {
+
+    updateDisplay();
+
+    /*
+       This page has finished loading.
+
+       If the runner was already started,
+       continue to the next URL.
+    */
+
+    if (running) {
+
+        setTimeout(function() {
+
+            continueRunner();
+
+        }, 500);
+    }
+
+});
+
+
+updateDisplay();
+
+</script>
+
+</body>
+</html>
